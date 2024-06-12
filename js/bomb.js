@@ -1,10 +1,9 @@
 class Bomb {
     constructor(game) {
         this.game = game;
-        this.width = 50;
-        this.height = 50;
+        this.radius = 50;
         this.x = Math.floor(Math.random() * this.game.width);
-        this.y = -this.height;
+        this.y = -this.radius;
         this.dx = 0;
         this.dy = 1;
         this.available = true;
@@ -28,8 +27,10 @@ class Bomb {
     }
     draw() {
         if (!this.available) {
+            this.game.ctx.beginPath();
             this.game.ctx.fillStyle = 'red';
-            this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
+            this.game.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+            this.game.ctx.fill();
         }
     }
 }
