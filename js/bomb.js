@@ -1,7 +1,7 @@
 class Bomb {
     constructor(game) {
         this.game = game;
-        this.radius = 50;
+        this.radius = 25;
         this.x = Math.floor(Math.random() * this.game.width);
         this.y = -this.radius;
         this.dx = 0;
@@ -10,7 +10,7 @@ class Bomb {
     }
     start() {
         this.available = false;
-        this.y = -this.height;
+        this.y = -this.radius;
         this.x = Math.floor(Math.random() * this.game.width);
     }
     reset() {
