@@ -1,8 +1,8 @@
 class Player {
-    constructor(game, rotationControls, movementControls) {
+    constructor(game, rotationControl, movementControl) {
         this.game = game;
-        this.rotationControls = rotationControls;
-        this.movementControls = movementControls;
+        this.rotationControl = rotationControl;
+        this.movementControl = movementControl;
         this.height;
         this.width;
         this.radius = 40;
@@ -25,16 +25,16 @@ class Player {
         if (this.game.keys.includes('ArrowRight')) this.x += this.speedX;
 
         // Handle player movmentin joystick
-        if (this.movementControls.stickX > this.movementControls.x + this.movementControls.radius / 1.5) this.x += this.speedX;
-        if (this.movementControls.stickX < this.movementControls.x - this.movementControls.radius / 1.5) this.x -= this.speedX;
-        if (this.movementControls.stickY > this.movementControls.y + this.movementControls.radius / 1.5) this.y += this.speedY;
-        if (this.movementControls.stickY < this.movementControls.y - this.movementControls.radius / 1.5) this.y -= this.speedY;
+        if (this.movementControl.stickX > this.movementControl.x + this.movementControl.radius / 1.5) this.x += this.speedX;
+        if (this.movementControl.stickX < this.movementControl.x - this.movementControl.radius / 1.5) this.x -= this.speedX;
+        if (this.movementControl.stickY > this.movementControl.y + this.movementControl.radius / 1.5) this.y += this.speedY;
+        if (this.movementControl.stickY < this.movementControl.y - this.movementControl.radius / 1.5) this.y -= this.speedY;
     }
     draw() {
         this.game.ctx.save();
 
         this.game.ctx.translate(this.x, this.y);
-        this.game.ctx.rotate(this.rotationControls.angle);
+        this.game.ctx.rotate(this.rotationControl.angle);
         this.game.ctx.translate(-this.x, -this.y);
 
 
