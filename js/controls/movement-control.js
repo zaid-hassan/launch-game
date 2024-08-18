@@ -2,8 +2,9 @@ class MovementControl {
     constructor(game) {
         this.game = game;
         this.radius = 50;
-        this.x = this.game.width - this.radius * 2;
+        this.x = this.radius * 2;
         this.y = this.game.height - this.radius * 2;
+        
 
         this.initX = this.x;
         this.initY = this.y;
@@ -24,12 +25,6 @@ class MovementControl {
         this.game.ctx.beginPath();
         this.game.ctx.arc(this.stickX, this.stickY, this.radius / 2, 0, Math.PI * 2, true);
         this.game.ctx.stroke();
-    }
-
-    isInside(touchX, touchY) {
-        const dx = touchX - this.x;
-        const dy = touchY - this.y;
-        return Math.sqrt(dx * dx + dy * dy) < this.radius;
     }
 
     update(touchX, touchY) {

@@ -10,6 +10,13 @@ class Player {
         this.y = this.game.height / 2;
         this.speedX = 5;
         this.speedY = 5;
+        this.aim;
+    }
+    shoot () {
+        const bomb = this.game.getBomb();
+        if (bomb) {
+            bomb.start(this.x, this.y, this.aim[0], this.aim[1])
+        }
     }
     update() {
         // Bound player movement
@@ -29,12 +36,16 @@ class Player {
         if (this.movementControl.stickX < this.movementControl.x - this.movementControl.radius / 1.5) this.x -= this.speedX;
         if (this.movementControl.stickY > this.movementControl.y + this.movementControl.radius / 1.5) this.y += this.speedY;
         if (this.movementControl.stickY < this.movementControl.y - this.movementControl.radius / 1.5) this.y -= this.speedY;
+
+        // Handle player aiming
+        this.aim = this.game.calcAim(this, this.game.mouse);
     }
     draw() {
         this.game.ctx.save();
 
         this.game.ctx.translate(this.x, this.y);
-        this.game.ctx.rotate(this.rotationControl.angle);
+        this.game.ctx.rotate(this.game.getAngle(this.game.mouse.x, this.game.mouse.y, this.x, this.y));
+        // console.log(this.game.getAngle(this.game.mouse.x, this.game.mouse.y, this.x, this.y))
         this.game.ctx.translate(-this.x, -this.y);
 
 

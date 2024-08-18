@@ -1,21 +1,25 @@
 class Bomb {
-    constructor(game, player) {
+    constructor(game) {
         this.game = game;
-        this.player = player;
-        this.radius = 25;
+        this.radius = 15;
         this.x;
         this.y;
-        this.speedX = 0;
-        this.speedY = Math.floor(Math.random() * 3) + 1;
+        this.speedX = 1;
+        // this.speedY = Math.floor(Math.random() * 3) + 1;
+        this.speedY = 1
         this.available = true;
     }
-    start() {
+    start(x, y, speedX, speedY) {
         this.available = false;
-        this.x = Math.floor(Math.random() * this.game.width);
-        this.y = -this.radius;
+        this.x = x;
+        this.y = y;
+        this.speedX = speedX * 10;
+        this.speedY = speedY * 10;
+        console.log(this.x, this.y)
     }
     reset() {
         this.available = true;
+        console.log('bomb reset')
     }
     update() {
         if (!this.available) {
@@ -25,10 +29,7 @@ class Bomb {
                 this.x = this.game.width - this.width;
             }
             
-            if (this.y > this.game.height) {
-                this.reset();
-            }
-            if (this.game.checkCollision(this, this.game.player)) {
+            if (this.y > this.game.height || this.x > this.game.width || this.x < 0 || this.y < 0) {
                 this.reset();
             }
         }
