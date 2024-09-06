@@ -1,12 +1,12 @@
-class Bomb {
+export default class Bomb {
     constructor(game) {
         this.game = game;
         this.radius = 15;
         this.x;
         this.y;
-        this.speedX = 1;
+        this.speedX;
         // this.speedY = Math.floor(Math.random() * 3) + 1;
-        this.speedY = 1
+        this.speedY;
         this.available = true;
     }
     start(x, y, speedX, speedY) {
@@ -15,11 +15,11 @@ class Bomb {
         this.y = y;
         this.speedX = speedX * 10;
         this.speedY = speedY * 10;
-        console.log(this.x, this.y)
+        // console.log(this.x, this.y)
     }
     reset() {
         this.available = true;
-        console.log('bomb reset')
+        // console.log('bomb reset')
     }
     update() {
         if (!this.available) {

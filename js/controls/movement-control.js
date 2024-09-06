@@ -1,9 +1,9 @@
-class MovementControl {
+export default class MovementControl {
     constructor(game) {
         this.game = game;
         this.radius = 50;
         this.x = this.radius * 2;
-        this.y = this.game.height - this.radius * 2;
+        this.y = this.game.height - this.radius * 1.2;
         
 
         this.initX = this.x;

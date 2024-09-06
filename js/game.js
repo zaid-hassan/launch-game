@@ -1,4 +1,10 @@
-class Game {
+import Player from "./player.js";
+import Bomb from "./bomb.js";
+import Spaceship from "./space-ship.js";
+import MovementControl from "./controls/movement-control.js";
+import RotationControl from "./controls/rotation-control.js";
+
+export default class Game {
     constructor(canvas, ctx) {
         this.canvas = canvas;
         this.ctx = ctx;
@@ -8,18 +14,19 @@ class Game {
 
         this.rotationControl = new RotationControl(this);
         this.movementControl = new MovementControl(this);
+        // this.trigger = new Trigger(this);
         this.player = new Player(this, this.rotationControl, this.movementControl);
         // this.spaceShip = new Spaceship(this, this.bomb);
 
         this.spaceShipPool = [];
         this.numberOfspaceShips = 5;
         this.createSpaceShipPool();
-        console.log(this.spaceShipPool)
+        // console.log(this.spaceShipPool)
 
         this.bombPool = [];
         this.numberOfBombs = 5;
         this.createBombPool();
-        console.log(this.bombPool)
+        // console.log(this.bombPool)
 
         // this.bombTimer = 0;
         // this.bombInterval = 1000;
@@ -27,6 +34,7 @@ class Game {
         this.mouse = {
             x: undefined,
             y: undefined,
+            isClicked: false,
         }
         // this.touch = {
         //     x: undefined,
@@ -47,30 +55,35 @@ class Game {
             e.preventDefault();
             this.mouse.x = e.offsetX;
             this.mouse.y = e.offsetY;
+            // this.rotationControl.update(undefined, undefined, this.mouse.x, this.mouse.y)
         })
         window.addEventListener('mousedown', e => {
             e.preventDefault();
             this.mouse.x = e.offsetX;
             this.mouse.y = e.offsetY;
-            this.player.shoot()
+            this.mouse.isClicked = true;
+        })
+        window.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            this.mouse.isClicked = false;
         })
 
         window.addEventListener('touchstart', e => this.handleTouchStart(e), { passive: false });
         window.addEventListener('touchmove', e => this.handleTouchMove(e), { passive: false });
         window.addEventListener('touchend', e => this.handleTouchEnd(e), { passive: false });
-        
+
         window.addEventListener('keydown', e => {
             if (this.keys.indexOf(e.key) === -1) {
                 this.keys.push(e.key);
             }
-            console.log(this.keys)
+            // console.log(this.keys)
         })
         window.addEventListener('keyup', e => {
             const index = this.keys.indexOf(e.key);
             if (index > -1) {
                 this.keys.splice(index, 1);
             }
-            console.log(this.keys)
+            // console.log(this.keys)
         })
 
         document.querySelector('#fullScreenButton').addEventListener('click', () => {
@@ -107,14 +120,6 @@ class Game {
             return false;
         }
     }
-    calcAim (a, b) {
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
-        const distance = Math.hypot(dx, dy);
-        const aimX = dx / distance * - 1;
-        const aimY = dy / distance * -1;
-        return [aimX, aimY, dx, dy];
-    }
     getAngle(obj1X, obj1Y, obj2X, obj2Y) {
         const dx = obj1X - obj2X;
         const dy = obj1Y - obj2Y;
@@ -125,7 +130,7 @@ class Game {
     isInside(obj1X, obj1Y, obj2X, obj2Y, Obj2Radius) {
         const dx = obj1X - obj2X;
         const dy = obj1Y - obj2Y;
-        return Math.sqrt(dx * dx + dy * dy) < Obj2Radius;
+        return Math.hypot(dx, dy) < Obj2Radius;
     }
     createBombPool() {
         for (let i = 0; i < this.numberOfBombs; i++) {
@@ -138,17 +143,21 @@ class Game {
         }
     }
     getBomb() {
-        for (let i = 0; i < this.bombPool.length; i++) {
-            if (this.bombPool[i].available) {
-                return this.bombPool[i];
-            }
+        if (!this.bombPool) {
+            return null;
+        } else {
+            const foundBomb = this.bombPool.find(bomb => bomb.available);
+            return foundBomb ? foundBomb : undefined;
+    
         }
     }
     getSpaceShip() {
-        for (let i = 0; i < this.spaceShipPool.length; i++) {
-            if (this.spaceShipPool[i].available) {
-                return this.spaceShipPool[i];
-            }
+        if (!this.spaceShipPool) {
+            return null;
+        } else {
+            const foundSpaceShip = this.spaceShipPool.find(spaceShip => spaceShip.available);
+            return foundSpaceShip ? foundSpaceShip : undefined;
+
         }
     }
     // handleBomb(deltaTime) {
@@ -162,7 +171,7 @@ class Game {
     //         }
     //     }
     // }
-    handleSpaceShip () {
+    handleSpaceShip() {
         const spaceShip = this.getSpaceShip();
         if (spaceShip) spaceShip.start();
     }
@@ -204,7 +213,7 @@ class Game {
         this.ctx.fillText('Score', this.canvas.width / 2, 35);
         this.ctx.restore();
     }
-a
+    a
     render() {
         // this.handleBomb(deltaTime);
         this.handleSpaceShip()
@@ -217,33 +226,15 @@ a
             bomb.draw();
         });
 
-       
+
         this.player.update();
         this.player.draw();
         // this.spaceShip.draw();
         this.drawStatusText()
+        // this.trigger.draw()
         if (this.width < 1350 && this.width > 400) {
             this.rotationControl.draw();
             this.movementControl.draw();
         }
     }
 }
-
-window.addEventListener('load', () => {
-    const canvas = document.querySelector('#canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const game = new Game(canvas, ctx);
-
-    let lastTime = 0;
-    function animate(timeStamp) {
-        const deltaTime = timeStamp - lastTime;
-        lastTime = timeStamp;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        game.render(deltaTime);
-        requestAnimationFrame(animate);
-    }
-    animate();
-})

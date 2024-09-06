@@ -1,4 +1,4 @@
-class Spaceship {
+export default class Spaceship {
     constructor(game, player) {
         this.game = game;
         this.player = player
@@ -49,6 +49,6 @@ class Spaceship {
         this.game.ctx.fill();
 
         this.game.ctx.restore();
-        console.log('draw ss')
+        // console.log('draw ss')
     }
 }
