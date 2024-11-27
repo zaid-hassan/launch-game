@@ -1,7 +1,7 @@
-export default class Bomb {
+export default class Bullet {
     constructor(game) {
         this.game = game;
-        this.radius = 8;
+        this.radius = 5;
         this.x;
         this.y;
         this.speedX;
@@ -13,8 +13,8 @@ export default class Bomb {
         this.available = false;
         this.x = x;
         this.y = y;
-        this.speedX = speedX * 200;
-        this.speedY = speedY * 200;
+        this.speedX = speedX * 400;
+        this.speedY = speedY * 400;
         // console.log(this.x, this.y)
     }
     reset() {
@@ -37,7 +37,7 @@ export default class Bomb {
     draw() {
         if (!this.available) {
             this.game.ctx.beginPath();
-            this.game.ctx.fillStyle = 'black';
+            this.game.ctx.fillStyle = 'red';
             this.game.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
             this.game.ctx.fill();
         }

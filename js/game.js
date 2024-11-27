@@ -1,4 +1,5 @@
 import Player from "./player.js";
+import Bullet from "./bullet.js";
 import Bomb from "./bomb.js";
 import Spaceship from "./space-ship.js";
 import MovementControl from "./controls/movement-control.js";
@@ -14,22 +15,21 @@ export default class Game {
 
         this.rotationControl = new RotationControl(this);
         this.movementControl = new MovementControl(this);
-        // this.trigger = new Trigger(this);
         this.player = new Player(this, this.rotationControl, this.movementControl);
-        // this.spaceShip = new Spaceship(this, this.bomb);
+        // this.spaceShip = new Spaceship(this, this.bullet);
 
         this.spaceShipPool = [];
-        this.numberOfspaceShips = 5;
+        this.numberOfspaceShips = 2;
         this.createSpaceShipPool();
         // console.log(this.spaceShipPool)
 
+        this.bulletPool = [];
+        this.numberOfBullets = 5;
+        this.createBulletPool();
+        
         this.bombPool = [];
-        this.numberOfBombs = 5;
+        this.numberOfBomb = 500;
         this.createBombPool();
-        // console.log(this.bombPool)
-
-        // this.bombTimer = 0;
-        // this.bombInterval = 1000;
 
         this.mouse = {
             x: undefined,
@@ -47,9 +47,11 @@ export default class Game {
 
         this.start();
 
-        window.addEventListener('resize', e => {
-            this.resize(e.target.innerWidth, e.target.innerHeight)
-        });
+        // Debounced resize function
+        window.addEventListener('resize', this.debounce((e) => {
+            this.resize(e.target.innerWidth, e.target.innerHeight);
+        }, 100));
+        
 
         window.addEventListener('mousemove', e => {
             e.preventDefault();
@@ -91,6 +93,18 @@ export default class Game {
         })
     }
 
+
+    debounce(func, delay) {
+        let timeout;
+        return function (...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(context, args);
+            }, delay);
+        };
+    }
+
     toggleFullScreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
@@ -107,6 +121,7 @@ export default class Game {
         this.canvas.height = height;
         this.width = width;
         this.height = height;
+        console.log('resize');
     }
     checkCollision(circle1, circle2) {
         const dx = circle2.x - circle1.x;
@@ -132,9 +147,9 @@ export default class Game {
         const dy = obj1Y - obj2Y;
         return Math.hypot(dx, dy) < Obj2Radius;
     }
-    createBombPool() {
-        for (let i = 0; i < this.numberOfBombs; i++) {
-            this.bombPool.push(new Bomb(this));
+    createBulletPool() {
+        for (let i = 0; i < this.numberOfBullets; i++) {
+            this.bulletPool.push(new Bullet(this));
         }
     }
     createSpaceShipPool() {
@@ -142,13 +157,27 @@ export default class Game {
             this.spaceShipPool.push(new Spaceship(this, this.player));
         }
     }
-    getBomb() {
-        if (!this.bombPool) {
+    createBombPool() {
+        for (let i = 0; i < this.numberOfBomb; i++) {
+            this.bombPool.push(new Bomb(this))
+        }
+    }
+    // getbullet() {
+    //     if (!this.bulletPool) {
+    //         return null;
+    //     } else {
+    //         const foundbullet = this.bulletPool.find(bullet => bullet.available);
+    //         return foundbullet ? foundbullet : undefined;
+
+    //     }
+    // }
+    getbullet() {
+        if (!this.bulletPool) {
             return null;
         } else {
-            const foundBomb = this.bombPool.find(bomb => bomb.available);
-            return foundBomb ? foundBomb : undefined;
-    
+            // Find the first available bullet
+            const foundbullet = this.bulletPool.find(bullet => bullet.available);
+            return foundbullet ? foundbullet : null;  // Return null if no bullets are available
         }
     }
     getSpaceShip() {
@@ -160,14 +189,22 @@ export default class Game {
 
         }
     }
-    // handleBomb(deltaTime) {
-    //     if (this.bombTimer < this.bombInterval) {
-    //         this.bombTimer += deltaTime;
+    getBomb() {
+        if (!this.bombPool) {
+            return null;
+        } else {
+            const foundBomb = this.bombPool.find(bomb => bomb.available);
+            return foundBomb ? foundBomb : undefined;
+        }
+    }
+    // handlebullet(deltaTime) {
+    //     if (this.bulletTimer < this.bulletInterval) {
+    //         this.bulletTimer += deltaTime;
     //     } else {
-    //         this.bombTimer = 0;
-    //         const bomb = this.getBomb();
-    //         if (bomb) {
-    //             bomb.start();
+    //         this.bulletTimer = 0;
+    //         const bullet = this.getbullet();
+    //         if (bullet) {
+    //             bullet.start();
     //         }
     //     }
     // }
@@ -214,20 +251,23 @@ export default class Game {
         this.ctx.restore();
     }
     a
-    render() {
-        // this.handleBomb(deltaTime);
+    render(deltaTime) {
+        // this.handlebullet(deltaTime);
         this.handleSpaceShip()
         this.spaceShipPool.forEach(spaceShip => {
-            spaceShip.update();
+            spaceShip.update(deltaTime);
             spaceShip.draw();
+            spaceShip.shoot(deltaTime)
         })
-        this.bombPool.forEach(bomb => {
-            bomb.update();
-            bomb.draw();
+        this.bulletPool.forEach(bullet => {
+            bullet.update(deltaTime);
+            bullet.draw();
         });
-
-
-        this.player.update();
+        this.bombPool.forEach(bomb => {
+            bomb.update(deltaTime);
+            bomb.draw();
+        })
+        this.player.update(deltaTime);
         this.player.draw();
         // this.spaceShip.draw();
         this.drawStatusText()
